@@ -5,7 +5,9 @@ module.exports = {
   entry: './src/index.ts',
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'mewui.js'
+    filename: 'mewui.js',
+    library: 'MewUI',
+    libraryTarget: 'umd'
   },
   resolve: {
     extensions: ['.ts']

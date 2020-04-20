@@ -1,4 +1,4 @@
-import DOM, { StringHTMLTemplate, Binding, TemplateParser } from './dom';
+import { DOM, StringHTMLTemplate, Binding, TemplateParser } from './dom';
 
 /**
  * The interface representing a view model. This will be the core entity of the reactivity system.
@@ -20,7 +20,7 @@ export interface ViewModel<Model> {
 /**
  * The core class for enabling the reactivity system.
  */
-export default class Mew<Model> implements ViewModel<Model> {
+export class Mew<Model> implements ViewModel<Model> {
   private callbackRegistry: {
     [key: string]: {
       callbacks: Array<(newValue: any) => any>;
@@ -33,10 +33,9 @@ export default class Mew<Model> implements ViewModel<Model> {
     this.callbackRegistry = {};
     this.bindings = TemplateParser.deriveBindings(this.template);
     this.template = TemplateParser.applyBindings(this.template, this.bindings);
-    TemplateParser.updateBindings(this.bindings);
-
     const { tag, element } = TemplateParser.parse(this.template);
     this.$el = new DOM(tag, element);
+    TemplateParser.updateBindings(this.bindings, element);
   }
 
   apply(model: Model) {

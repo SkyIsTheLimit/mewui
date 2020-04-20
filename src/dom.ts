@@ -46,7 +46,7 @@ export interface Binding {
  * This class will abstract all communication with the browser
  * document object model.
  */
-export default class DOM {
+export class DOM {
   /**
    * The HTMLElement this instance is wrapping over. This will be used as the underlying operator.
    */
@@ -58,8 +58,8 @@ export default class DOM {
    */
   private $children: Array<DOM>;
 
-  constructor(private tag: string, $el?: HTMLElement) {
-    this.$el = $el || new HTMLUnknownElement();
+  constructor(private tag: string, $el: HTMLElement) {
+    this.$el = $el;
     this.$children = [];
   }
 
@@ -69,10 +69,6 @@ export default class DOM {
    * the direct methods in this class.
    */
   el() {
-    if (!this.$el) {
-      this.$el = document.createElement(this.tag);
-    }
-
     return this.$el;
   }
 
@@ -89,7 +85,7 @@ export default class DOM {
   parent() {
     return new DOM(
       this.$el?.parentElement?.tagName || '',
-      this.$el?.parentElement || new HTMLUnknownElement()
+      this.$el?.parentElement || document.createElement('div')
     );
   }
 
@@ -170,7 +166,7 @@ export class TemplateParser {
     bindings: Array<Binding>
   ): StringHTMLTemplate => {
     bindings.forEach((binding) => {
-      template.replace(
+      template = template.replace(
         new RegExp(`${binding.text}`),
         `<span ${TemplateParser.identifyingAttribute}="${binding.id}">&lt;#${binding.name} not applied&gt;</span>`
       );
@@ -182,14 +178,17 @@ export class TemplateParser {
   /**
    * Helper function to update the bindings with their bound DOM object.
    */
-  static updateBindings = (bindings: Array<Binding>) => {
+  static updateBindings = (
+    bindings: Array<Binding>,
+    container: HTMLElement
+  ) => {
     bindings.forEach((binding) => {
-      const $el = document.querySelector(
-        `[${TemplateParser.identifyingAttribute}="${binding.id}"]`
-      );
+      const queryString = `[${TemplateParser.identifyingAttribute}="${binding.id}"]`;
+      const $el = container.querySelector(queryString);
       binding.$el = new DOM($el?.tagName as string, $el as HTMLElement);
-      binding.update = (newValue) =>
-        (binding.$el.el().innerText = `${newValue}`);
+      binding.update = (newValue) => {
+        return (binding.$el.el().innerText = `${newValue}`);
+      };
     });
   };
 }
