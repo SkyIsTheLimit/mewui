@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "lib": ["ES5", "ES6", "ESNext", "DOM"],
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "declaration": true,
-    "declarationDir": "dist"
+    "declarationDir": "dist/@types"
   },
-  "include": ["src/**/*"],
+  "files": ["./src/index.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

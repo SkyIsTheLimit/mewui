@@ -56,7 +56,7 @@ export class DOM {
    * The list of DOM children. The $el property obviously maintains its own list of children, this is
    * just a stripped down version of the actual DOM tree.
    */
-  private $children: Array<DOM>;
+  private $children: DOM[];
 
   constructor(private tag: string, $el: HTMLElement) {
     this.$el = $el;
@@ -83,10 +83,7 @@ export class DOM {
    * Method to return the parent DOM object of the current DOM object. The parent is figured out at the
    */
   parent() {
-    return new DOM(
-      this.$el?.parentElement?.tagName || '',
-      this.$el?.parentElement || document.createElement('div')
-    );
+    return new DOM(this.$el?.parentElement?.tagName || '', this.$el?.parentElement || document.createElement('div'));
   }
 
   /**
@@ -98,16 +95,9 @@ export class DOM {
   }
 
   /**
-   * Method to append a DOM object.
+   * Method to append a DOM object to the current tree. If an HTMLElement is supplied, it will be wrapped as a DOM object first.
    * @param element The DOM object to be appended.
    */
-  append(element: DOM): void;
-
-  /**
-   * Method to wrap an HTMLElement in a DOM object and then append it to the current tree.
-   * @param element The HTMLElement to be appended.
-   */
-  append(element: HTMLElement): void;
   append(element: DOM | HTMLElement) {
     if (!this.isDOM(element)) {
       element = new DOM(element.tagName, element);
@@ -118,16 +108,9 @@ export class DOM {
   }
 
   /**
-   * Method to append to another DOM object.
-   * @param element The DOM object to be appended to.
+   * Method to append the current tree to another DOM object or HTMLElement.
+   * @param element
    */
-  appendTo(element: DOM): void;
-
-  /**
-   * Method to wrap an HTMLElement in a DOM object and then append to it the current tree.
-   * @param element The HTMLElement to be appended to.
-   */
-  appendTo(element: HTMLElement): void;
   appendTo(element: DOM | HTMLElement) {
     if (!this.isDOM(element)) {
       element = new DOM(element.tagName, element);
@@ -135,79 +118,4 @@ export class DOM {
 
     element.$el.append(this.$el);
   }
-}
-
-/**
- * Class used to parse HTML strings for special tokens.
- */
-export class TemplateParser {
-  private static _id = 0;
-  private static id = () => `${++TemplateParser._id}-${new Date().getTime()}`;
-  private static identifyingAttribute = 'data-mew-id';
-
-  static bindingParser = (bindingString: string) => bindingString.substring(1);
-  /**
-   * Method to return an HTMLElement from a template string.
-   * @param template The template string to parse.
-   */
-  static parse = (template: StringHTMLTemplate) => {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = template;
-    return {
-      tag: wrapper.firstElementChild?.tagName as string,
-      element: wrapper.firstElementChild as HTMLElement,
-    };
-  };
-
-  /**
-   * Helper function to derive bindings from an HTML string template.
-   */
-  static deriveBindings = (template: StringHTMLTemplate) => {
-    const regex = /:\w+/g;
-
-    return (
-      template.match(regex)?.map<Binding>(
-        (bindingString) =>
-          ({
-            id: TemplateParser.id(),
-            text: bindingString,
-            name: TemplateParser.bindingParser(bindingString),
-          } as Binding)
-      ) || []
-    );
-  };
-
-  /**
-   * Helper function to apply bindings to an HTML string template.
-   */
-  static applyBindings = (
-    template: StringHTMLTemplate,
-    bindings: Array<Binding>
-  ): StringHTMLTemplate => {
-    bindings.forEach((binding) => {
-      template = template.replace(
-        new RegExp(`${binding.text}`),
-        `<span ${TemplateParser.identifyingAttribute}="${binding.id}">&lt;#${binding.name} not applied&gt;</span>`
-      );
-    });
-
-    return template;
-  };
-
-  /**
-   * Helper function to update the bindings with their bound DOM object.
-   */
-  static updateBindings = (
-    bindings: Array<Binding>,
-    container: HTMLElement
-  ) => {
-    bindings.forEach((binding) => {
-      const queryString = `[${TemplateParser.identifyingAttribute}="${binding.id}"]`;
-      const $el = container.querySelector(queryString);
-      binding.$el = new DOM($el?.tagName as string, $el as HTMLElement);
-      binding.update = (newValue) => {
-        return (binding.$el.el().innerText = `${newValue}`);
-      };
-    });
-  };
 }
