@@ -19,7 +19,7 @@ yarn add mewui
 MewUI is used to quickly make your DOM reactive.
 
 ```typescript
-import Mew from 'mewui';
+import { Mew } from 'mewui';
 
 interface CurrentTimeModel {
   currentTime: string;
