@@ -116,6 +116,25 @@ export class DOM {
     this.$el.append(element.$el);
     this.$children.push(element);
   }
+
+  /**
+   * Method to append to another DOM object.
+   * @param element The DOM object to be appended to.
+   */
+  appendTo(element: DOM): void;
+
+  /**
+   * Method to wrap an HTMLElement in a DOM object and then append to it the current tree.
+   * @param element The HTMLElement to be appended to.
+   */
+  appendTo(element: HTMLElement): void;
+  appendTo(element: DOM | HTMLElement) {
+    if (!this.isDOM(element)) {
+      element = new DOM(element.tagName, element);
+    }
+
+    element.$el.append(this.$el);
+  }
 }
 
 /**

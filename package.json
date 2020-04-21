@@ -1,6 +1,6 @@
 {
   "name": "mewui",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A miniature UI development library to quickly prototype small websites.",
   "main": "dist/mewui.js",
   "types": "dist/index.d.ts",
