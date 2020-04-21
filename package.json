@@ -1,9 +1,9 @@
 {
   "name": "mewui",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A miniature UI development library to quickly prototype small websites.",
   "main": "dist/mewui.js",
-  "types": "dist/@types/index.d.ts",
+  "types": "dist/index.d.ts",
   "repository": "https://github.com/SkyIsTheLimit/mewui.git",
   "author": "Sandeep Prasad <s3g007@gmail.com>",
   "license": "MIT",
