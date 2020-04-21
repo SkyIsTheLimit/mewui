@@ -35,7 +35,7 @@ const vm = new Mew<CurrentTimeModel>(`
 });
 
 // Append the template to the DOM.
-document.body.append(vm.$el.el());
+vm.el().appendTo(document.body);
 
 setInterval(() => {
   // Update the values on the view model and see it update on the DOM automatically.
