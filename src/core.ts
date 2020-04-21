@@ -1,4 +1,5 @@
-import { DOM, StringHTMLTemplate, Binding, TemplateParser } from './dom';
+import { TemplateParser } from './template-parser';
+import { DOM, StringHTMLTemplate, Binding } from './dom';
 
 /**
  * The interface representing a view model. This will be the core entity of the reactivity system.
@@ -23,10 +24,10 @@ export interface ViewModel<Model> {
 export class Mew<Model> implements ViewModel<Model> {
   private callbackRegistry: {
     [key: string]: {
-      callbacks: Array<(newValue: any) => any>;
+      callbacks: ((newValue: any) => any)[];
     };
   };
-  private bindings: Array<Binding>;
+  private bindings: Binding[];
   private $el: DOM;
 
   constructor(private template: StringHTMLTemplate) {
@@ -50,16 +51,20 @@ export class Mew<Model> implements ViewModel<Model> {
           this.callbackRegistry[key].callbacks.push(binding.update);
         });
 
-      let value = '';
+      const fireCallbacks = (newValue: any) =>
+        this.callbackRegistry[key].callbacks.forEach((callback) => callback(newValue));
+
+      let value = JSON.parse(JSON.stringify(model))[key];
+
       Object.defineProperty(this, key, {
         get: () => value,
         set: (newValue: any) => {
           value = newValue;
-          this.callbackRegistry[key].callbacks.forEach((callback) =>
-            callback(newValue)
-          );
+          fireCallbacks(newValue);
         },
       });
+
+      fireCallbacks(value);
     });
 
     return (this as unknown) as ViewModel<Model> & Model;

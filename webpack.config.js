@@ -4,7 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = {
   entry: './src/index.ts',
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'dist', 'umd'),
     filename: 'mewui.js',
     library: 'MewUI',
     libraryTarget: 'umd'
